@@ -60,12 +60,30 @@ class VigenereCipheringMachine {
         skippedChars++
       }
     }
-    return ecryptedMessage
+    return this.direct ? ecryptedMessage : ecryptedMessage.split('').reverse().join('')
   }
   decrypt(string, key) {
     if (!string || !key) {
       throw new Error('Incorrect arguments!')
     }
+
+    let decryptedMessage = ''
+    let currentIdx
+    let shift
+    let decryptedChar
+    let skippedChars = 0
+    for (let i = 0; i < string.length; i++) {
+      if (this.alphabet.includes(string[i].toUpperCase())) {
+        currentIdx = this.alphabet.indexOf(string[i].toUpperCase())
+        shift = this.alphabet.indexOf(key[(i - skippedChars) % key.length].toUpperCase())
+        decryptedChar = this.alphabet[(currentIdx - shift + this.alphabet.length) % this.alphabet.length]
+        decryptedMessage += decryptedChar
+      } else {
+        decryptedMessage += string[i]
+        skippedChars++
+      }
+    }
+    return this.direct ? decryptedMessage : decryptedMessage.split('').reverse().join('')
   }
 }
 
